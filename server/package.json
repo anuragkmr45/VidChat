@@ -1,17 +1,20 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "server side for VidChat(video calling app)",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js"
   },
-  "author": "",
+  "author": {
+    "name": "Anurag Kumar",
+    "profile": "https://www.linkedin.com/in/anurag-kumar-37aab221a/"
+  },
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "nodemon": "^2.0.22",
     "socket.io": "^4.6.1"
   }

@@ -1,35 +1,61 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSocket } from "../context/SocketProvider";
 
-// material UI components
-import { TextField, Container, Button, Stack } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+const LobbyScreen = () => {
+    const [email, setEmail] = useState("");
+    const [room, setRoom] = useState("");
 
-function Lobby() {
+    const socket = useSocket();
+    const navigate = useNavigate();
 
-    const [email, setEmail] = useState(" ");
-    const [room, setRoom] = useState(" ");
+    const handleSubmitForm = useCallback(
+        (e) => {
+            e.preventDefault();
+            socket.emit("room:join", { email, room });
+        },
+        [email, room, socket]
+    );
 
-    const handleSubmit = useCallback((e) => {
-        e.preventDefault();
+    const handleJoinRoom = useCallback(
+        (data) => {
+            const { email, room } = data;
+            navigate(`/room/${room}`);
+        },
+        [navigate]
+    );
 
-        console.log({ email, room });
-    })
+    useEffect(() => {
+        socket.on("room:join", handleJoinRoom);
+        return () => {
+            socket.off("room:join", handleJoinRoom);
+        };
+    }, [socket, handleJoinRoom]);
 
     return (
-        <Container >
+        <div>
             <h1>Lobby</h1>
+            <form onSubmit={handleSubmitForm}>
+                <label htmlFor="email">Email ID</label>
+                <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+                <br />
+                <label htmlFor="room">Room Number</label>
+                <input
+                    type="text"
+                    id="room"
+                    value={room}
+                    onChange={(e) => setRoom(e.target.value)}
+                />
+                <br />
+                <button>Join</button>
+            </form>
+        </div>
+    );
+};
 
-            <Container>
-                <Stack spacing={{ xs: 1, sm: 2 }} flexWrap="wrap">
-                    <TextField id="email" label="Email ID" variant="filled" value={email} onChange={(e) => setEmail(e.target.value)} />
-                    <TextField id="room" label="Room Code" variant="filled" value={room} onChange={(e) => setRoom(e.target.value)} />
-                    <Button type='submit' variant="outlined" onClick={handleSubmit} endIcon={<SendIcon />}>
-                        Let's Gooooo...
-                    </Button>
-                </Stack>
-            </Container>
-        </Container>
-    )
-}
-
-export default Lobby
+export default LobbyScreen;
